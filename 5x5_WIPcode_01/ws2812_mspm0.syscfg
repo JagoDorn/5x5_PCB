@@ -1,0 +1,68 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --device "MSPM0G350X" --part "Default" --package "VSSOP-28(DGS28)" --product "mspm0_sdk@2.10.00.04"
+ * @v2CliArgs --device "MSPM0G3507" --package "VSSOP-28(DGS28)" --product "mspm0_sdk@2.10.00.04"
+ * @versions {"tool":"1.26.2+4477"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const Board         = scripting.addModule("/ti/driverlib/Board");
+const DMA           = scripting.addModule("/ti/driverlib/DMA");
+const PWM           = scripting.addModule("/ti/driverlib/PWM", {}, false);
+const PWM1          = PWM.addInstance();
+const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
+const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+
+DMA.sub0ChanID                                  = 1;
+DMA.subscriberIndex                             = ["1"];
+DMA.sub1ChanID                                  = 1;
+DMA.associatedChannels.create(1);
+DMA.associatedChannels[0].triggerType           = "INTERNAL";
+DMA.associatedChannels[0].configureTransferSize = true;
+DMA.associatedChannels[0].$name                 = "TIMA0_CCP0";
+DMA.associatedChannels[0].enableInterrupt       = true;
+DMA.associatedChannels[0].addressMode           = "b2f";
+DMA.associatedChannels[0].dstLength             = "HALF_WORD";
+DMA.associatedChannels[0].srcLength             = "HALF_WORD";
+DMA.associatedChannels[0].transferMode          = "SINGLE";
+DMA.associatedChannels[0].triggerSelectInternal = "1";
+DMA.associatedChannels[0].peripheral.$assign    = "DMA_CH1";
+
+PWM1.$name                              = "PWM_WS2812";
+PWM1.timerCount                         = 99;
+PWM1.ccIndex                            = [0];
+PWM1.event1ControllerInterruptEn        = ["ZERO_EVENT"];
+PWM1.event1PublisherChannel             = 1;
+PWM1.PWM_CHANNEL_0.$name                = "ti_driverlib_pwm_PWMTimerCC0";
+PWM1.PWM_CHANNEL_0.ccValue              = 0;
+PWM1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
+PWM1.ccp0PinConfig.direction            = scripting.forceWrite("OUTPUT");
+PWM1.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
+PWM1.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
+PWM1.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+PWM1.peripheral.$assign                 = "TIMA1";
+PWM1.peripheral.ccp0Pin.$assign         = "PA15";
+
+SYSCTL.SYSPLL_Pdiv   = 1;
+SYSCTL.SYSPLL_Qdiv   = 5;
+SYSCTL.SYSPLL_CLK0En = true;
+SYSCTL.MCLKSource    = "HSCLK";
+
+ProjectConfig.migrationCondition = true;
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+Board.peripheral.$suggestSolution          = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution = "PA20";
+Board.peripheral.swdioPin.$suggestSolution = "PA19";
+SYSCTL.peripheral.$suggestSolution         = "SYSCTL";
